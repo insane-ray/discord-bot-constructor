@@ -1,20 +1,27 @@
 {
   "name": "discord-bot-constructor",
   "version": "0.1.0",
-  "description": "discord simple bot constructor",
-  "main": "index.js",
+  "description": "simple bot constructor for discord",
+  "main": "lib/index.js",
+  "types": "lib",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/insane-ray/discord-bot-constructor.git"
   },
-  "keywords": ["discord", "bot"],
+  "keywords": [
+    "discord",
+    "bot"
+  ],
   "author": "github.com/insane-ray",
   "license": "(MIT OR Apache-2.0)",
   "bugs": {
     "url": "https://github.com/insane-ray/discord-bot-constructor/issues"
   },
-  "homepage": "https://github.com/insane-ray/discord-bot-constructor#readme"
+  "homepage": "https://github.com/insane-ray/discord-bot-constructor#readme",
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  }
 }
