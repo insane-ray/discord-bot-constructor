@@ -23,5 +23,8 @@
   "homepage": "https://github.com/insane-ray/discord-bot-constructor#readme",
   "devDependencies": {
     "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.1"
   }
 }
