@@ -1,13 +1,14 @@
 import { Client, GuildMember, Message } from 'discord.js';
 import { BotBase } from "./bot-base";
 import { BotUtil } from "./bot-util";
-import { BotAction, BotConfig } from "./config.interface";
+import { BotAction, BotConfig, IterableData } from "./config.interface";
 
 export enum ActionType {
   simple = 'simple',
   mention = 'mention',
   text = 'text',
-  nested = 'nested'
+  nested = 'nested',
+  custom = 'custom'
 }
 
 export interface ConstructorConfig {
@@ -27,8 +28,8 @@ export class BotConstructor extends BotBase {
       new Client({
         partials: ['MESSAGE']
       }),
-      config.token,
       config.prefix,
+      config.token,
       config.config
     );
   }
@@ -55,7 +56,7 @@ export class BotConstructor extends BotBase {
   protected getPhrase(
     action: BotAction,
     message: Message,
-    info?: {[key: string]: string}
+    info?: IterableData<string>
   ): string {
     const author: GuildMember = BotUtil.getMsgAuthor(message);
     const phrases: string[] = action.phrases as string[];
@@ -67,7 +68,7 @@ export class BotConstructor extends BotBase {
     });
   }
 
-  protected parsePhraseTemplate(phrase: string, info: {[key: string]: string}): string {
+  protected parsePhraseTemplate(phrase: string, info: IterableData<string>): string {
     phrase = phrase.replace("{author}", info.author || '');
     phrase = phrase.replace("{mentionedUser}", info.mentionedUser || '');
 
@@ -89,6 +90,8 @@ export class BotConstructor extends BotBase {
         return this.runTextAction(action, message, actionsParams.args);
       case ActionType.mention:
         return this.runMentionAction(action, message);
+      case ActionType.custom:
+        return this.runCustomAction(action, message, actionsParams.args);
     }
   }
 
@@ -124,5 +127,9 @@ export class BotConstructor extends BotBase {
     message.channel.send(this.getPhrase(action, message, {
       mentionedUser: member.nickname || member.user.username
     }));
+  };
+
+  private runCustomAction(action: BotAction, message: Message, args: string[]): void {
+    action.apply(action, message, args)
   };
 }

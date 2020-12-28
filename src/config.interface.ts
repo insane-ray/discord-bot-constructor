@@ -1,7 +1,13 @@
+import { Message } from "discord.js";
+
+export interface IterableData<T> {
+  [key: string]: T
+}
+
 export interface BotConfig {
   actions: BotAction[];
   botState?: BotState;
-  i18n?: {[key: string]: string};
+  i18n?: IterableData<string>;
 }
 
 export interface BotAction {
@@ -10,6 +16,7 @@ export interface BotAction {
   helpInfo?: string;
   phrases?: string[];
   children?: BotAction[];
+  apply(action: BotAction, message: Message, args: string[]): void;
 }
 
 export interface BotState {
@@ -21,6 +28,6 @@ export interface BotState {
   status: BotStateStatus
 }
 
-export type ActionType = 'simple' | 'mention' | 'text' | 'nested';
+export type ActionType = 'simple' | 'mention' | 'text' | 'nested' | 'custom';
 export type BotStateStatus = 'online' | 'idle' | 'dnd';
 export type BotActivityType = 'PLAYING' | 'STREAMING' | 'LISTENING' | 'WATCHING';

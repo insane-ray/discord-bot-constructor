@@ -1,27 +1,73 @@
-import { BotAction, BotConfig, BotState } from "./config.interface";
 import { Client, Message } from "discord.js";
+import { BotUtil } from "./bot-util";
+import { BotAction, BotConfig, BotState } from "./config.interface";
 
 export abstract class BotBase {
   protected constructor(
     protected readonly client: Client,
-    protected readonly token: string,
     protected readonly prefix: string,
-    protected readonly config: BotConfig,
+    private readonly token: string,
+    private config: BotConfig,
   ) {
+    this.extendActions();
     this.observeSocket();
   }
 
   protected abstract onMessage(message: Message): void;
 
+  private systemActions: BotAction[] = [];
+  protected customActions: BotAction[] = [];
+
   private readonly _i18n: {[key: string]: string} = {
-    actionNotFound: "Action not found",
-    argumentNotFound: "Action not found",
+    actionNotFound: "action not found",
+    argumentNotFound: "action not found",
     wrongMention: "No user mentioned",
     wrongArgument: "Invalid argument",
     helpInfoList: "'/help list' - to see all actions",
     helpInfoAction: "'/help action' - to get help about specific action",
     helpList: "List of available actions:"
   };
+
+  private extendActions(): void {
+    this.initSystemActions();
+    this.config.actions = [
+      ...this.config.actions,
+      ...this.systemActions,
+      ...this.customActions
+    ]
+  }
+
+  private initSystemActions(): void {
+    this.customActions.push(
+      {
+        name: "help",
+        type: "custom",
+        apply: (action: BotAction, message: Message, args: string[]) => {
+          if (args.length > 0) {
+            const command = args.join(' ');
+            if (command === 'list') {
+              const actionList = this.actionList
+                .filter(action => action.name !== 'help')
+                .map(action => action.name).join(', ');
+              message.channel.send(`${this.i18n('helpList')} ${actionList}`);
+            } else {
+              const action: BotAction | null = this.getAction(command);
+              if (!action) {
+                message.channel.send(this.i18n('actionNotFound'));
+                return;
+              }
+              message.channel.send(action.helpInfo as string);
+            }
+          } else {
+            message.channel.send([
+              this.i18n('helpInfoList'),
+              this.i18n('helpInfoAction')
+            ]);
+          }
+        }
+      }
+    )
+  }
 
   private observeSocket(): void {
     this.observeReady();
@@ -31,7 +77,7 @@ export abstract class BotBase {
 
   private observeReady(): void {
     this.client.on('ready', () => {
-      console.log(`${this.client.user?.tag} has logged in.`);
+      console.log(`${this.client.user?.tag} has logged in. Time: ${BotUtil.currentTime}`);
       this.setBotPresence();
     });
   }
@@ -47,13 +93,15 @@ export abstract class BotBase {
         },
         status: bonState.status
       });
-      console.log(`${this.client.user?.tag} presence has been updated.`);
+      console.log(`${this.client.user?.tag} presence has been updated. Time: ${BotUtil.currentTime}`);
     }
   }
 
   private observeMessage(): void {
     this.client.on('message', async (message) => {
-      this.onMessage(message)
+      if(!message.author.bot) {
+        this.onMessage(message);
+      }
     });
   }
 
@@ -61,8 +109,12 @@ export abstract class BotBase {
     this.client.login(this.token);
   }
 
+  protected get actionList(): BotAction[] {
+    return this.config.actions;
+  };
+
   protected getAction(name: string): BotAction | null {
-    return this.config.actions.find(action => action.name === name) || null
+    return this.actionList.find(action => action.name === name) || null
   }
 
   protected getNestedAction(action: BotAction, name: string): BotAction | undefined {
