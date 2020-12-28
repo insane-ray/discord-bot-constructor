@@ -65,6 +65,10 @@ export abstract class BotBase {
     return this.config.actions.find(action => action.name === name) || null
   }
 
+  protected getNestedAction(action: BotAction, name: string): BotAction | undefined {
+    return action.children?.find(nested => nested.name === name)
+  };
+
   protected get botState(): BotState | null {
     return this.config.botState || null;
   }

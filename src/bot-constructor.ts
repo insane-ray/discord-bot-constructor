@@ -52,30 +52,12 @@ export class BotConstructor extends BotBase {
     return { name: name, args: args }
   };
 
-  private runAction(message: Message): void {
-    const actionsParams: ActionParam = this.getActionParams(message);
-    const action: BotAction | null = this.getAction(actionsParams.name);
-    if (!action) {
-      message.reply(this.i18n('actionNotFound'));
-      return;
-    }
-
-    switch (action.type) {
-      case ActionType.simple:
-        return this.runSimpleAction(action, message);
-    }
-  }
-
-  private runSimpleAction(action: BotAction, message: Message): void {
-    message.channel.send(this.getPhrase(action, message));
-  };
-
   protected getPhrase(
     action: BotAction,
     message: Message,
     info?: {[key: string]: string}
   ): string {
-    const author: GuildMember = this.getMsgAuthor(message) as GuildMember;
+    const author: GuildMember = BotUtil.getMsgAuthor(message);
     const phrases: string[] = action.phrases as string[];
     const randomIndex: number = (phrases.length > 0) ? BotUtil.randomNumber(0, phrases.length) : 0;
 
@@ -92,7 +74,55 @@ export class BotConstructor extends BotBase {
     return phrase;
   }
 
-  protected getMsgAuthor(message: Message): GuildMember | undefined {
-    return message.guild?.members.cache.get(message.author.id)
+  private runAction(message: Message): void {
+    const actionsParams: ActionParam = this.getActionParams(message);
+    const action: BotAction | null = this.getAction(actionsParams.name);
+    if (!action) {
+      message.reply(this.i18n('actionNotFound'));
+      return;
+    }
+
+    switch (action.type) {
+      case ActionType.simple:
+        return this.runSimpleAction(action, message);
+      case ActionType.text:
+        return this.runTextAction(action, message, actionsParams.args);
+      case ActionType.mention:
+        return this.runMentionAction(action, message);
+    }
+  }
+
+  private runSimpleAction(action: BotAction, message: Message): void {
+    message.channel.send(this.getPhrase(action, message));
+  };
+
+  private runTextAction(action: BotAction, message: Message, args: string[]): void {
+    if (args.length === 0) {
+      message.reply(this.i18n('wrongArgument'));
+      return;
+    }
+
+    const actionText = args.join(' ');
+    const nestedAction = this.getNestedAction(action, actionText);
+
+    if (!nestedAction) {
+      message.reply(this.i18n('actionNotFound'));
+      return;
+    }
+
+    message.channel.send(this.getPhrase(nestedAction, message));
+  };
+
+  private runMentionAction(action: BotAction, message: Message): void {
+    const member = BotUtil.getMentionedMember(message);
+
+    if (!member) {
+      message.reply(this.i18n('wrongMention'));
+      return;
+    }
+
+    message.channel.send(this.getPhrase(action, message, {
+      mentionedUser: member.nickname || member.user.username
+    }));
   };
 }
