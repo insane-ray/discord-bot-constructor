@@ -69,7 +69,7 @@ export abstract class BotBase {
     return this.config.botState || null;
   }
 
-  protected i18n(phrase: string): string | null {
+  protected i18n(phrase: string): string {
     const i18n = this.config.i18n;
     return i18n ? i18n[phrase] || this._i18n[phrase] : this._i18n[phrase];
   }

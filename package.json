@@ -16,7 +16,7 @@
     "bot"
   ],
   "author": "github.com/insane-ray",
-  "license": "(MIT OR Apache-2.0)",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/insane-ray/discord-bot-constructor/issues"
   },
