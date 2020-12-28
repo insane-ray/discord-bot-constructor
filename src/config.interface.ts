@@ -16,7 +16,7 @@ export interface BotAction {
   helpInfo?: string;
   phrases?: string[];
   children?: BotAction[];
-  apply(action: BotAction, message: Message, args: string[]): void;
+  apply(message: Message, action: BotAction, args: string[]): void;
 }
 
 export interface BotState {

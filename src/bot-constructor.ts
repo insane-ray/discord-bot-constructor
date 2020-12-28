@@ -54,8 +54,8 @@ export class BotConstructor extends BotBase {
   };
 
   protected getPhrase(
-    action: BotAction,
     message: Message,
+    action: BotAction,
     info?: IterableData<string>
   ): string {
     const author: GuildMember = BotUtil.getMsgAuthor(message);
@@ -85,21 +85,21 @@ export class BotConstructor extends BotBase {
 
     switch (action.type) {
       case ActionType.simple:
-        return this.runSimpleAction(action, message);
+        return this.runSimpleAction(message, action);
       case ActionType.text:
-        return this.runTextAction(action, message, actionsParams.args);
+        return this.runTextAction(message, action, actionsParams.args);
       case ActionType.mention:
-        return this.runMentionAction(action, message);
+        return this.runMentionAction(message, action);
       case ActionType.custom:
-        return this.runCustomAction(action, message, actionsParams.args);
+        return this.runCustomAction(message, action, actionsParams.args);
     }
   }
 
-  private runSimpleAction(action: BotAction, message: Message): void {
-    message.channel.send(this.getPhrase(action, message));
+  private runSimpleAction(message: Message, action: BotAction): void {
+    message.channel.send(this.getPhrase(message, action));
   };
 
-  private runTextAction(action: BotAction, message: Message, args: string[]): void {
+  private runTextAction(message: Message, action: BotAction, args: string[]): void {
     if (args.length === 0) {
       message.reply(this.i18n('wrongArgument'));
       return;
@@ -113,10 +113,10 @@ export class BotConstructor extends BotBase {
       return;
     }
 
-    message.channel.send(this.getPhrase(nestedAction, message));
+    message.channel.send(this.getPhrase(message, nestedAction));
   };
 
-  private runMentionAction(action: BotAction, message: Message): void {
+  private runMentionAction(message: Message, action: BotAction): void {
     const member = BotUtil.getMentionedMember(message);
 
     if (!member) {
@@ -124,12 +124,14 @@ export class BotConstructor extends BotBase {
       return;
     }
 
-    message.channel.send(this.getPhrase(action, message, {
-      mentionedUser: member.nickname || member.user.username
-    }));
+    message.channel.send(
+      this.getPhrase(message, action, {
+        mentionedUser: member.nickname || member.user.username
+      })
+    );
   };
 
-  private runCustomAction(action: BotAction, message: Message, args: string[]): void {
-    action.apply(action, message, args)
+  private runCustomAction(message: Message, action: BotAction, args: string[]): void {
+    action.apply(message, action, args)
   };
 }

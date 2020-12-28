@@ -42,7 +42,7 @@ export abstract class BotBase {
       {
         name: "help",
         type: "custom",
-        apply: (action: BotAction, message: Message, args: string[]) => {
+        apply: (message: Message, action: BotAction, args: string[]) => {
           if (args.length > 0) {
             const command = args.join(' ');
             if (command === 'list') {
