@@ -11,6 +11,9 @@ Simple bot constructor for discord, based on [Discord.js](https://discord.js.org
 ## Requirements
 [Node.js](https://nodejs.org/) 12 or newer 
 
+## Installation
+`npm i discord-bot-constructor`
+
 ## Documentation
 See example [here](https://github.com/insane-ray/discord-bot-example).
 
