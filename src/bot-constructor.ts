@@ -1,7 +1,7 @@
-import { Client, GuildMember, Message } from 'discord.js';
+import { Client, Message } from 'discord.js';
 import { BotBase } from "./bot-base";
 import { BotUtil } from "./bot-util";
-import { BotAction, BotConfig, IterableData } from "./config.interface";
+import { BotAction, BotConfig, ParsedSlug } from "./config.interface";
 
 export enum ActionType {
   simple = 'simple',
@@ -22,11 +22,11 @@ export interface ActionParam {
   args: string[];
 }
 
-export class BotConstructor extends BotBase {
+export class BotConstructor extends BotBase  {
   constructor(config: ConstructorConfig) {
     super(
       new Client({
-        partials: ['MESSAGE']
+        partials: ['MESSAGE'],
       }),
       config.prefix,
       config.token,
@@ -53,28 +53,6 @@ export class BotConstructor extends BotBase {
     return { name: name, args: args }
   };
 
-  protected getPhrase(
-    message: Message,
-    action: BotAction,
-    info?: IterableData<string>
-  ): string {
-    const author: GuildMember = BotUtil.getMsgAuthor(message);
-    const phrases: string[] = action.phrases as string[];
-    const randomIndex: number = (phrases.length > 0) ? BotUtil.randomNumber(0, phrases.length) : 0;
-
-    return this.parsePhraseTemplate(phrases[randomIndex], {
-      ...info,
-      author: author.nickname || author.user.username,
-    });
-  }
-
-  protected parsePhraseTemplate(phrase: string, info: IterableData<string>): string {
-    phrase = phrase.replace("{author}", info.author || '');
-    phrase = phrase.replace("{mentionedUser}", info.mentionedUser || '');
-
-    return phrase;
-  }
-
   private runAction(message: Message): void {
     const actionsParams: ActionParam = this.getActionParams(message);
     const action: BotAction | null = this.getAction(actionsParams.name);
@@ -95,8 +73,45 @@ export class BotConstructor extends BotBase {
     }
   }
 
+  protected getPhrase(
+    message: Message,
+    action: BotAction,
+  ): Promise<string> {
+    const phrases: string[] = action.phrases as string[];
+    const randomIndex: number = (phrases.length > 0) ? BotUtil.randomNumber(0, phrases.length) : 0;
+    const randomPhrase = phrases[randomIndex];
+
+    return this.parsePhraseTemplate(message, action, randomPhrase);
+  }
+
+  protected parsePhraseTemplate(message: Message, action: BotAction, phrase: string): Promise<string> {
+    const slugList: string[] = this.slugList.map(slug => slug.name);
+    return new Promise<string>((resolve, reject) => {
+      const promises: Promise<ParsedSlug>[] = [];
+      slugList.forEach(slugName => {
+        const slug = `{${slugName}}`;
+        if (phrase.includes(slug)) {
+          promises.push(this.parseSlug(slugName, message, action));
+        }
+      });
+
+      Promise.all(promises).then((value: ParsedSlug[]) => {
+        value.forEach(parsedSlug => {
+          phrase = phrase.replace(new RegExp(`{${parsedSlug.name}}`, "g"), parsedSlug.parsedValue as string);
+        });
+      }).then(() => {
+        resolve(phrase);
+      });
+    });
+  }
+
   private runSimpleAction(message: Message, action: BotAction): void {
-    message.channel.send(this.getPhrase(message, action));
+    this.getPhrase(message, action)
+      .then(msg => {
+        console.log('msg', msg);
+        message.channel.send(msg)
+          .catch(err => console.log(err));
+      });
   };
 
   private runTextAction(message: Message, action: BotAction, args: string[]): void {
@@ -113,7 +128,10 @@ export class BotConstructor extends BotBase {
       return;
     }
 
-    message.channel.send(this.getPhrase(message, nestedAction));
+    this.getPhrase(message, nestedAction)
+      .then(msg => {
+        message.channel.send(msg);
+      });
   };
 
   private runMentionAction(message: Message, action: BotAction): void {
@@ -124,11 +142,10 @@ export class BotConstructor extends BotBase {
       return;
     }
 
-    message.channel.send(
-      this.getPhrase(message, action, {
-        mentionedUser: member.nickname || member.user.username
-      })
-    );
+    this.getPhrase(message, action)
+      .then(msg => {
+        message.channel.send(msg);
+      });
   };
 
   private runCustomAction(message: Message, action: BotAction, args: string[]): void {

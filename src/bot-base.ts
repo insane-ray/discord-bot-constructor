@@ -1,6 +1,6 @@
-import { Client, Message } from "discord.js";
+import { Client, GuildMember, Message } from "discord.js";
 import { BotUtil } from "./bot-util";
-import { BotAction, BotConfig, BotState } from "./config.interface";
+import { BotAction, BotConfig, BotState, ParsedSlug, PhraseSlug } from "./config.interface";
 
 export abstract class BotBase {
   protected constructor(
@@ -10,13 +10,22 @@ export abstract class BotBase {
     private config: BotConfig,
   ) {
     this.extendActions();
+    this.extendSlugs();
     this.observeSocket();
   }
 
   protected abstract onMessage(message: Message): void;
 
+  protected onActionInit(): void {};
+  protected onSlugInit(): void {};
+
+  private phraseSlugs: PhraseSlug[] = [];
+
   private systemActions: BotAction[] = [];
+  private systemSlugs: PhraseSlug[] = [];
+
   protected customActions: BotAction[] = [];
+  protected customSlugs: PhraseSlug[] = [];
 
   private readonly _i18n: {[key: string]: string} = {
     actionNotFound: "action not found",
@@ -30,6 +39,7 @@ export abstract class BotBase {
 
   private extendActions(): void {
     this.initSystemActions();
+    this.onActionInit();
     this.config.actions = [
       ...this.config.actions,
       ...this.systemActions,
@@ -37,16 +47,22 @@ export abstract class BotBase {
     ]
   }
 
+  private extendSlugs(): void {
+    this.initSystemSlugs();
+    this.onSlugInit();
+    this.phraseSlugs.push(...this.systemSlugs, ...this.customSlugs);
+  }
+
   private initSystemActions(): void {
-    this.customActions.push(
+    this.systemActions.push(
       {
         name: "help",
         type: "custom",
-        apply: (message: Message, action: BotAction, args: string[]) => {
+        apply: (message: Message, action: BotAction, args: string[]): void => {
           if (args.length > 0) {
-            const command = args.join(' ');
+            const command: string = args.join(' ');
             if (command === 'list') {
-              const actionList = this.actionList
+              const actionList: string = this.actionList
                 .filter(action => action.name !== 'help')
                 .map(action => action.name).join(', ');
               message.channel.send(`${this.i18n('helpList')} ${actionList}`);
@@ -64,6 +80,45 @@ export abstract class BotBase {
               this.i18n('helpInfoAction')
             ]);
           }
+        }
+      }
+    )
+  }
+
+  private initSystemSlugs(): void {
+    this.systemSlugs.push(
+      {
+        name: 'author',
+        apply(message: Message, action: BotAction): Promise<string | number> {
+          return new Promise<string|number>((resolve, reject) => {
+            resolve(BotUtil.getMemberName(BotUtil.getMsgAuthor(message)));
+          });
+        }
+      },
+      {
+        name: 'mentionedUser',
+        apply(message: Message, action: BotAction): Promise<string | number> {
+          return new Promise<string|number>((resolve, reject) => {
+            resolve(BotUtil.getMemberName(BotUtil.getMentionedMember(message) as GuildMember));
+          });
+        }
+      },
+      {
+        name: 'randomMember',
+        apply(message: Message, action: BotAction): Promise<string | number> {
+          return new Promise<string|number>((resolve, reject) => {
+            message.guild?.members
+              .fetch({limit: 1000})
+              .then(members => {
+                const randomMember: GuildMember = members
+                  .filter(member => !member.user.bot)
+                  .random();
+                resolve(BotUtil.getMemberName(randomMember));
+              })
+              .catch(err => {
+                reject(err);
+              });
+          });
         }
       }
     )
@@ -128,5 +183,18 @@ export abstract class BotBase {
   protected i18n(phrase: string): string {
     const i18n = this.config.i18n;
     return i18n ? i18n[phrase] || this._i18n[phrase] : this._i18n[phrase];
+  }
+
+  protected get slugList(): PhraseSlug[] {
+    return this.phraseSlugs;
+  }
+
+  protected parseSlug(name: string, message: Message, action: BotAction): Promise<ParsedSlug> {
+    const phraseSlug = this.slugList.find(slug => slug.name === name) as PhraseSlug;
+    return new Promise<ParsedSlug>((resolve, reject) => {
+      phraseSlug
+        .apply(message, action)
+        .then(slug => resolve({ name: name, parsedValue: slug }))
+    })
   }
 }

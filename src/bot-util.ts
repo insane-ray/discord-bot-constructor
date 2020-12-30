@@ -13,6 +13,10 @@ export class BotUtil {
     return message.mentions?.members?.first();
   }
 
+  static getMemberName(member: GuildMember): string {
+    return member.nickname || member.user.username
+  }
+
   static get currentTime(): string {
     const date: Date = new Date();
     return `${

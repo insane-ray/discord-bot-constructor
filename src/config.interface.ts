@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import {Message} from "discord.js";
 
 export interface IterableData<T> {
   [key: string]: T
@@ -10,12 +10,22 @@ export interface BotConfig {
   i18n?: IterableData<string>;
 }
 
+export interface PhraseSlug {
+  name: string;
+  apply(message: Message, action: BotAction): Promise<string | number>;
+}
+
+export interface ParsedSlug {
+  name: string;
+  parsedValue: string | number;
+}
+
 export interface BotAction {
   name: string;
   type: ActionType;
   helpInfo?: string;
-  phrases?: string[];
   children?: BotAction[];
+  phrases?: string[];
   apply(message: Message, action: BotAction, args: string[]): void;
 }
 
