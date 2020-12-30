@@ -1,6 +1,6 @@
 {
-  "name": "discord-bot-constructor",
-  "version": "0.2.0",
+  "name": "@insane-ray/discord-bot-constructor",
+  "version": "0.3.0",
   "description": "Simple bot constructor for discord, based on Discord.js",
   "main": "lib/index.js",
   "types": "lib",
