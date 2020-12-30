@@ -177,13 +177,13 @@ You can translate default system messages:
 
 Example:
 ```js
-Object {
-    actionNotFound: "action not found",
-    argumentNotFound: "action not found",
-    wrongMention: "No user mentioned",
-    wrongArgument: "Invalid argument",
-    helpInfoList: "'/help list' - to see all actions",
-    helpInfoAction: "'/help action' - to get help about specific action",
-    helpList: "List of available actions:"
+{
+  actionNotFound: "action not found",
+  argumentNotFound: "action not found",
+  wrongMention: "No user mentioned",
+  wrongArgument: "Invalid argument",
+  helpInfoList: "'/help list' - to see all actions",
+  helpInfoAction: "'/help action' - to get help about specific action",
+  helpList: "List of available actions:"
 }
 ```
