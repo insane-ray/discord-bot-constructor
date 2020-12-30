@@ -13,9 +13,9 @@ See example [here](https://github.com/insane-ray/discord-bot-example).
 
 #### 1. Init 
 Options:
-<br>`token` - your copied bot token
-<br>`prefix` - sign to start your command like `/` or `$`
-<br>`config` - see [config](https://github.com/insane-ray/discord-bot-constructor/#2-config) section
+- `token` - your bot token
+- `prefix` - sign to start your command like `/` or `$`
+- `config` - see [config](https://github.com/insane-ray/discord-bot-constructor/#2-config) section
 
 Example:
 ```js
@@ -44,7 +44,7 @@ BotConfig {
   i18n?: IterableData<string>;
 }
 ```
-##### 2.1 Config actions
+##### 2.1 Config `actions`
 List of bot actions
 <br><br>
 Options: 
@@ -125,19 +125,47 @@ BotAction {
   phrases?: string[];
 }
 ```
-##### 2.2 Config botState (optional)
+##### 2.2 Config `botState` (optional)
+You can set bot status and presence
+
+Options:
+- `activity` - available options:
+    * `name` - activity name
+    * `type` - activity type:
+        * `PLAYING`
+        * `STREAMING`
+        * `LISTENING`
+        * `WATCHING`
+    * `url` - url link (optional)
+- `status` - available bot statuses:
+    * `online`
+    * `idle`
+    * `dnd`
+
+Example:
+```js
+{
+  activity: {
+    name: "testing bot",
+    type: "PLAYING"
+  },
+  status: "online"
+}
+```
+
+Interface:
 ```js
 BotState {
   activity: {
     name: string;
-    type: BotActivityType;
+    type: 'PLAYING' | 'STREAMING' | 'LISTENING' | 'WATCHING';
     url?: string;
   }
-  status: BotStateStatus
+  status: 'online' | 'idle' | 'dnd'
 }
 ```
 
-##### 2.3 Config i18n (optional)
+##### 2.3 Config `i18n` (optional)
 You can translate default system messages:
 - `actionNotFound` - action not found
 - `argumentNotFound` - action not found
