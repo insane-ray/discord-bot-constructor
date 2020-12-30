@@ -11,7 +11,7 @@ Simple bot constructor for discord, based on [Discord.js](https://discord.js.org
 ## Documentation
 See example [here](https://github.com/insane-ray/discord-bot-example).
 
-#### 1. Init 
+### 1. Init 
 Options:
 - `token` - your bot token
 - `prefix` - sign to start your command like `/` or `$`
@@ -28,7 +28,7 @@ const botConstructor = new BotConstructor({
 });
 ```
 
-#### 2. Config
+### 2. Config
 Options:
 - `actions` - list of actions
 - `botState` - set bot presence state (optional)
@@ -44,7 +44,7 @@ BotConfig {
   i18n?: IterableData<string>;
 }
 ```
-##### 2.1 Config `actions`
+#### 2.1 Config `actions`
 List of bot actions
 <br><br>
 Options: 
@@ -125,7 +125,7 @@ BotAction {
   phrases?: string[];
 }
 ```
-##### 2.2 Config `botState` (optional)
+#### 2.2 Config `botState` (optional)
 You can set bot status and presence
 
 Options:
@@ -165,7 +165,7 @@ BotState {
 }
 ```
 
-##### 2.3 Config `i18n` (optional)
+#### 2.3 Config `i18n` (optional)
 You can translate default system messages:
 - `actionNotFound` - action not found
 - `argumentNotFound` - action not found
