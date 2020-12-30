@@ -34,7 +34,7 @@ Options:
 - `botState` - set bot presence state (optional)
 - `i18n` - internalization (optional)
 
-See example here
+See example [here](https://github.com/insane-ray/discord-bot-example/blob/main/actions.json).
 
 Interface:
 ```js
@@ -56,12 +56,13 @@ Options:
     * `nested` for `text` type of action, using for nested text options
 - `helpInfo` - needed for `/help` action (optional)
 - `children` - combines with `text` action type, contains nested actions (optional)
-- `phrases` - list of text responses (optional), you can also use slugs in text:
+- `phrases` - list of text responses (optional), randomly take one from list. 
+<br> You can also use slugs in text:
     * `{author}` - insert message author
-    * `{mentionedUser}` - insert mentioned user in action (working only witn `mention` action type)
-    * `{randomMember}` - insert random guild member
+    * `{mentionedUser}` - insert mentioned user in action (works only witn `mention` action type)
+    * `{randomMember}` - insert random guild member (if you want to use this one, you need to turn on option `SERVER MEMBERS INTENT` in your application bot settings)
 
-Simple action example:
+`Simple` action example:
 ```js
 {
   name: "joke",
@@ -73,7 +74,45 @@ Simple action example:
     "Most people are shocked when they find out how bad I am as an electrician",
     "I started out with nothing, and I still have most of it."
   ]
-},
+}
+```
+
+`Mention` action example:
+```js
+{
+  name: "prank",
+  type: "mention",
+  helpInfo: "example of usage: '/prank @User'",
+  phrases: [
+    "{author} prank {mentionedUser}",
+    "{author} try to prank {mentionedUser}, but pranked only himself"
+  ]
+}
+```
+
+`Text` action example:
+```js
+{
+  name: "bot",
+  type: "text",
+  helpInfo: "example of usage: '/bot command' (random member, who the best)",
+  children: [
+    {
+      name: "random member,",
+      type: "nested",
+      phrases: [
+        "Bot choose {randomMember} as random member"
+      ]
+    },
+    {
+      name: "who the best",
+      type: "nested",
+      phrases: [
+        "{author} is the best"
+      ]
+    }
+  ]
+}
 ```
 
 Interface:
@@ -100,6 +139,15 @@ BotState {
 
 ##### 2.3 Config i18n (optional)
 You can translate default system messages:
+- `actionNotFound` - action not found
+- `argumentNotFound` - action not found
+- `wrongMention` - No user mentioned
+- `wrongArgument` - Invalid argument
+- `helpInfoList` - '/help list' - to see all actions
+- `helpInfoAction` - '/help action' - to get help about specific action
+- `helpList` - List of available actions:
+
+Example:
 ```js
 Object {
     actionNotFound: "action not found",
