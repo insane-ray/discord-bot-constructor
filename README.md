@@ -76,7 +76,7 @@ Options:
   type: "simple",
   helpInfo: "example of usage: '/joke'",
   phrases: [
-    "{author}, may be your tell us one?",
+    "{author}, may be you tell us one?",
     "Random decided, it's time {randomMember} to telling joke",
     "Most people are shocked when they find out how bad I am as an electrician"
   ]
