@@ -104,6 +104,14 @@ export abstract class BotBase {
         }
       },
       {
+        name: 'randomNumber',
+        apply(message: Message, action: BotAction): Promise<string | number> {
+          return new Promise<string|number>((resolve, reject) => {
+            resolve(BotUtil.randomNumber(1, 101));
+          });
+        }
+      },
+      {
         name: 'randomMember',
         apply(message: Message, action: BotAction): Promise<string | number> {
           return new Promise<string|number>((resolve, reject) => {

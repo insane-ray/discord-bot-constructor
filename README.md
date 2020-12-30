@@ -1,6 +1,9 @@
 # Simple bot constructor for [Discord](https://discord.com/)
 ## Overview
 Simple bot constructor for discord, based on [Discord.js](https://discord.js.org/).
+<br>
+<br>
+**Important!** if you want to use **randomMember** slug, you need to turn on option **SERVER MEMBERS INTENT** in your application bot settings
 ###### Links:
 - [Example](https://github.com/insane-ray/discord-bot-example)
 - [Visual Editor](https://github.com/insane-ray/discord-bot-ve)
@@ -60,6 +63,7 @@ Options:
 <br> You can also use slugs in text:
     * `{author}` - insert message author
     * `{mentionedUser}` - insert mentioned user in action (works only witn `mention` action type)
+    * `{randomNumber}` - insert random number between 1 and 100
     * `{randomMember}` - insert random guild member (if you want to use this one, you need to turn on option `SERVER MEMBERS INTENT` in your application bot settings)
 
 `Simple` action example:
@@ -69,10 +73,9 @@ Options:
   type: "simple",
   helpInfo: "example of usage: '/joke'",
   phrases: [
-    "{author} - you",
-    "{randomMember} is a joke",
-    "Most people are shocked when they find out how bad I am as an electrician",
-    "I started out with nothing, and I still have most of it."
+    "{author}, may be your tell us one?",
+    "Random decided, it's time {randomMember} to telling joke",
+    "Most people are shocked when they find out how bad I am as an electrician"
   ]
 }
 ```
@@ -80,12 +83,12 @@ Options:
 `Mention` action example:
 ```js
 {
-  name: "prank",
+  name: "ping",
   type: "mention",
-  helpInfo: "example of usage: '/prank @User'",
+  helpInfo: "example of usage: '/ping @User'",
   phrases: [
-    "{author} prank {mentionedUser}",
-    "{author} try to prank {mentionedUser}, but pranked only himself"
+    "{author} pinging {mentionedUser}",
+    "{mentionedUser} is not answering"
   ]
 }
 ```
@@ -93,22 +96,22 @@ Options:
 `Text` action example:
 ```js
 {
-  name: "bot",
+  name: "random",
   type: "text",
-  helpInfo: "example of usage: '/bot command' (random member, who the best)",
+  helpInfo: "example of usage: '/random command' (number, member)",
   children: [
     {
-      name: "random member,",
+      name: "number",
       type: "nested",
       phrases: [
-        "Bot choose {randomMember} as random member"
+        "Random number is {randomNumber}"
       ]
     },
     {
-      name: "who the best",
+      name: "member",
       type: "nested",
       phrases: [
-        "{author} is the best"
+        "Random member is {randomMember}"
       ]
     }
   ]
