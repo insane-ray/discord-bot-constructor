@@ -113,6 +113,15 @@ Options:
       phrases: [
         "Random member is {randomMember}"
       ]
+    },
+    {
+      name: "image",
+      type: "nested",
+      phrases: [
+        "https://cdn.spacetelescope.org/archives/images/wallpaper2/heic1509a.jpg",
+        "https://cdn.spacetelescope.org/archives/images/wallpaper2/heic1501a.jpg",
+        "https://cdn.spacetelescope.org/archives/images/wallpaper2/heic0506a.jpg",
+      ]
     }
   ]
 }
