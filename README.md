@@ -1,18 +1,20 @@
 # Simple bot constructor for [Discord](https://discord.com/)
 ## Overview
-Simple bot constructor for discord, based on [Discord.js](https://discord.js.org/).
+Simple bot constructor for discord, 
+based on [Discord.js](https://discord.js.org/), 
+and written with [TypeScript](https://www.typescriptlang.org/).
 <br>
 <br>
-**Important!** if you want to use **randomMember** slug, you need to turn on option **SERVER MEMBERS INTENT** in your application bot settings
+**Important!** if you want to use **randomMember** slug, you need to turn on option **SERVER MEMBERS INTENT** in your application bot settings.
 ###### Links:
 - [Example](https://github.com/insane-ray/discord-bot-example)
 - [Visual Editor](https://github.com/insane-ray/discord-bot-ve)
 
 ## Requirements
-[Node.js](https://nodejs.org/) 12 or newer 
+[Node.js](https://nodejs.org/) 12 or newer.
 
 ## Installation
-`npm i discord-bot-constructor`
+For installation type `npm i discord-bot-constructor`
 
 ## Documentation
 See example [here](https://github.com/insane-ray/discord-bot-example).
@@ -40,7 +42,7 @@ Options:
 - `botState` - set bot presence state (optional)
 - `i18n` - internalization (optional)
 
-See example [here](https://github.com/insane-ray/discord-bot-example/blob/main/actions.json).
+See example [here](https://github.com/insane-ray/discord-bot-example/blob/main/actions.json)
 
 Interface:
 ```js
@@ -62,7 +64,7 @@ Options:
     * `nested` for `text` type of action, using for nested text options
 - `helpInfo` - needed for `/help` action (optional)
 - `children` - combines with `text` action type, contains nested actions (optional)
-- `phrases` - list of text responses (optional), randomly take one from list. 
+- `phrases` - list of text responses (can contain link) (optional), randomly take one from list. 
 <br> You can also use slugs in text:
     * `{author}` - insert message author
     * `{mentionedUser}` - insert mentioned user in action (works only witn `mention` action type)
@@ -141,7 +143,7 @@ BotAction {
 }
 ```
 #### 2.2 Config `botState` (optional)
-You can set bot status and presence
+Setting bot status and presence.
 
 Options:
 - `activity` - available options:
@@ -181,7 +183,9 @@ BotState {
 ```
 
 #### 2.3 Config `i18n` (optional)
-You can translate default system messages:
+Translate default system messages.
+
+Options:
 - `actionNotFound` - action not found
 - `argumentNotFound` - action not found
 - `wrongMention` - No user mentioned
