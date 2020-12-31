@@ -42,7 +42,7 @@ Options:
 - `botState` - set bot presence state (optional)
 - `i18n` - internalization (optional)
 
-See example [here](https://github.com/insane-ray/discord-bot-example/blob/main/actions.json)
+See example [here](https://github.com/insane-ray/discord-bot-example/blob/main/actions.json).
 
 Interface:
 ```js
