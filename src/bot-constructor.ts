@@ -108,9 +108,7 @@ export class BotConstructor extends BotBase  {
   private runSimpleAction(message: Message, action: BotAction): void {
     this.getPhrase(message, action)
       .then(msg => {
-        console.log('msg', msg);
         message.channel.send(msg)
-          .catch(err => console.log(err));
       });
   };
 
