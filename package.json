@@ -12,6 +12,7 @@
     "url": "git+https://github.com/insane-ray/discord-bot-constructor.git"
   },
   "keywords": [
+    "typescript",
     "discord",
     "discord.js",
     "bot"
